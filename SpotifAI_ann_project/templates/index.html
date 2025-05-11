@@ -1,0 +1,429 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Spotify Song Prediction</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+      }
+
+      .calculator-container {
+        max-width: 650px;
+        margin: auto;
+        margin-top: 50px;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      h1 {
+        color: #ffffff;
+        font-weight: 600;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+      }
+
+      .form-label {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 5px;
+        text-align: left;
+        color: #dcdcdc;
+      }
+
+      input.form-control,
+      select.custom-select-dark {
+        font-size: 1rem;
+        padding: 12px;
+        background-color: rgba(255, 255, 255, 0.07);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      input.form-control::placeholder {
+        color: #bbb;
+      }
+
+      input.form-control:focus,
+      select.custom-select-dark:focus {
+        border-color: #66ffcc;
+        box-shadow: 0 0 8px #66ffcc;
+        outline: none;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .custom-select-dark {
+        width: 100%;
+        margin-bottom: 15px;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20fill='white'%20height='16'%20viewBox='0%200%2024%2024'%20width='16'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M7%2010l5%205%205-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px;
+      }
+
+      .btn-outline-light {
+        border-radius: 10px;
+        padding: 10px 25px;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: background 0.3s ease;
+      }
+
+      .btn-outline-light:hover {
+        background-color: #66ffcc;
+        color: #000;
+        border-color: #66ffcc;
+      }
+
+      .hen {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      .pt-3 input[readonly] {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #66ffcc;
+        font-weight: bold;
+        border: none;
+        text-align: center;
+      }
+      .custom-select-dark {
+        background-color: #111;
+        color: white;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 1.05rem;
+        width: 100%;
+        margin-bottom: 10px;
+        appearance: none;
+      }
+
+      .custom-select-dark option {
+        background-color: #111;
+        color: white;
+      }
+
+      .custom-select-dark:focus {
+        outline: none;
+        border-color: #888;
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <form method="post">
+      {% csrf_token %} 
+        {% if error %}
+          <div class="alert alert-danger mt-3" role="alert">
+           {{ error }}
+          </div>
+        {% endif %} 
+
+      <div class="container">
+        <div class="calculator-container">
+          <h1 class="text-center mb-4">Spotify Song Prediction</h1>
+
+          <!-- Danceability -->
+        <label class="form-label">Danceability</label>
+        <input type="number" step="any" class="form-control" name="danceability" value="{{ danceability }}" placeholder="Enter value" required>
+
+          <!-- Energy -->
+        <label class="form-label">Energy</label>
+        <input type="number" step="any" class="form-control" name="energy" value="{{ energy }}" placeholder="Enter value" required>
+
+          <!-- Tempo -->
+        <label class="form-label">Tempo</label>
+        <input type="number" step="any" class="form-control" name="tempo" value="{{ tempo }}" placeholder="Enter value" required>
+
+          <!-- Valence -->
+        <label class="form-label">Valence</label>
+        <input type="number" step="any" class="form-control" name="valence" value="{{ valence }}" placeholder="Enter value" required>
+
+          <!-- Speechiness -->
+        <label class="form-label">Speechiness</label>
+        <input type="number" step="any" class="form-control" name="speechiness" value="{{ speechiness }}" placeholder="Enter value" required>
+
+          <!-- Genre -->
+        <label class="form-label">Genre</label>
+        <select name="genre" class="custom-select-dark" required>
+           <option value="">Select Genre</option>
+           <option value="rock" {% if genre == "rock" %}selected{% endif %}>Rock</option>
+           <option value="pop" {% if genre == "pop" %}selected{% endif %}>Pop</option>
+           <option value="hip hop" {% if genre == "hip hop" %}selected{% endif %}>Hip Hop</option>
+           <option value="folk" {% if genre == "folk" %}selected{% endif %}>Folk</option>
+           <option value="electronic" {% if genre == "electronic" %}selected{% endif %}>Electronic</option>
+        </select>
+
+          <!-- Mode -->
+        <label class="form-label">Mode</label>
+        <select name="mode" class="custom-select-dark" required>
+           <option value="">Select Mode</option>
+           <option value="0" {% if mode == "0" %}selected{% endif %}>Minor (0)</option>
+           <option value="1" {% if mode == "1" %}selected{% endif %}>Major (1)</option>
+        </select>
+
+          <!-- Key -->
+        <label class="form-label">Key</label>
+        <select name="key" class="custom-select-dark" required>
+           <option value="">Select Key</option>
+           <option value="0" {% if key == "0" %}selected{% endif %}>C</option>
+           <option value="1" {% if key == "1" %}selected{% endif %}>C#</option>
+           <option value="2" {% if key == "2" %}selected{% endif %}>D</option>
+           <option value="3" {% if key == "3" %}selected{% endif %}>D#</option>
+           <option value="4" {% if key == "4" %}selected{% endif %}>E</option>
+           <option value="5" {% if key == "5" %}selected{% endif %}>F</option>
+           <option value="6" {% if key == "6" %}selected{% endif %}>F#</option>
+           <option value="7" {% if key == "7" %}selected{% endif %}>G</option>
+           <option value="8" {% if key == "8" %}selected{% endif %}>G#</option>
+           <option value="9" {% if key == "9" %}selected{% endif %}>A</option>
+           <option value="10" {% if key == "10" %}selected{% endif %}>A#</option>
+           <option value="11" {% if key == "11" %}selected{% endif %}>B</option>
+        </select>
+
+          <!-- Time Signature -->
+        <label class="form-label">Time Signature</label>
+        <select name="time_signature" class="custom-select-dark" required>
+           <option value="">Select Time Signature</option>
+           <option value="3" {% if time_signature == "3" %}selected{% endif %}>3/4</option>
+           <option value="4" {% if time_signature == "4" %}selected{% endif %}>4/4</option>
+           <option value="5" {% if time_signature == "5" %}selected{% endif %}>5/4</option>
+        </select>
+
+
+          <!-- Submit Button -->
+          <div class="hen">
+            <button type="submit" class="btn btn-outline-light">Submit</button>
+          </div>
+
+          <!-- Output -->
+        <div class="pt-3">
+          <label class="form-label text-center">Prediction Result</label>
+             <input class="form-control" placeholder="Prediction will appear here" value="{{ prediction }}" readonly>
+        </div>
+
+        </div>
+      </div>
+    </form>
+    <br/><br/><br/>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎵 Spotify Song Prediction</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      background-color: #121212;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      padding: 0;
+      margin: 0;
+    }
+
+    .form-container {
+      max-width: 600px;
+      margin: 60px auto;
+      padding: 35px;
+      background-color: #1e1e1e;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .form-container h1 {
+      text-align: center;
+      color: #1DB954;
+      margin-bottom: 30px;
+    }
+
+    .form-label {
+      font-weight: 500;
+      margin-top: 10px;
+      color: #ddd;
+    }
+
+    .form-control, .custom-select {
+      background-color: #2c2c2c;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+
+    .form-control:focus, .custom-select:focus {
+      border-color: #1DB954;
+      outline: none;
+      box-shadow: 0 0 6px #1DB954;
+    }
+
+    .btn-submit {
+      background-color: #1DB954;
+      color: #121212;
+      font-weight: bold;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      background-color: #17a84b;
+    }
+
+    .result {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+      color: #1DB954;
+    }
+
+    .emoji {
+      font-size: 1.3em;
+      margin-right: 5px;
+    }
+
+    select option {
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>🎧 Spotify Song Predictor</h1>
+    <form method="post">
+      {% csrf_token %}
+
+      {% if error %}
+        <div class="alert alert-danger" role="alert">
+          ⚠️ {{ error }}
+        </div>
+      {% endif %}
+
+      <label class="form-label"><span class="emoji">💃</span> Danceability</label>
+      <input type="number" step="any" class="form-control" name="danceability" value="{{ danceability }}" placeholder="0.0 to 1.0" required>
+
+      <label class="form-label"><span class="emoji">⚡</span> Energy</label>
+      <input type="number" step="any" class="form-control" name="energy" value="{{ energy }}" placeholder="0.0 to 1.0" required>
+
+      <label class="form-label"><span class="emoji">🎶</span> Tempo (BPM)</label>
+      <input type="number" step="any" class="form-control" name="tempo" value="{{ tempo }}" placeholder="Enter tempo" required>
+
+      <label class="form-label"><span class="emoji">🎵</span> Valence</label>
+      <input type="number" step="any" class="form-control" name="valence" value="{{ valence }}" placeholder="0.0 to 1.0" required>
+
+      <label class="form-label"><span class="emoji">🗣️</span> Speechiness</label>
+      <input type="number" step="any" class="form-control" name="speechiness" value="{{ speechiness }}" placeholder="0.0 to 1.0" required>
+
+      <label class="form-label"><span class="emoji">🎤</span> Genre</label>
+      <select name="genre" class="form-control custom-select" required>
+        <option value="">Choose Genre</option>
+        <option value="rock" {% if genre == "rock" %}selected{% endif %}>Rock</option>
+        <option value="pop" {% if genre == "pop" %}selected{% endif %}>Pop</option>
+        <option value="hip hop" {% if genre == "hip hop" %}selected{% endif %}>Hip Hop</option>
+        <option value="folk" {% if genre == "folk" %}selected{% endif %}>Folk</option>
+        <option value="Children’s Music" {% if genre == "Children’s Music" %}selected{% endif %}>Children’s Music</option>
+        <option value="Indie" {% if genre == "Indie" %}selected{% endif %}>Indie</option>
+        <option value="Jazz" {% if genre == "Jazz" %}selected{% endif %}>Jazz</option>
+        <option value="Soundtrack" {% if genre == "Soundtrack" %}selected{% endif %}>Soundtrack</option>
+      </select>
+
+      <label class="form-label"><span class="emoji">🎼</span> Mode</label>
+      <select name="mode" class="form-control custom-select" required>
+        <option value="">Choose Mode</option>
+        <option value="0" {% if mode == "0" %}selected{% endif %}>Minor</option>
+        <option value="1" {% if mode == "1" %}selected{% endif %}>Major</option>
+      </select>
+
+      <label class="form-label"><span class="emoji">🎹</span> Key</label>
+      <select name="key" class="form-control custom-select" required>
+        <option value="">Choose Key</option>
+        <option value="0" {% if key == "0" %}selected{% endif %}>Key (C)</option>
+        <option value="1" {% if key == "1" %}selected{% endif %}>Key (C#)</option>
+        <option value="2" {% if key == "2" %}selected{% endif %}>Key (D)</option>
+        <option value="3" {% if key == "3" %}selected{% endif %}>Key (D#)</option>
+        <option value="4" {% if key == "4" %}selected{% endif %}>Key (E)</option>
+        <option value="5" {% if key == "5" %}selected{% endif %}>Key (F)</option>
+        <option value="6" {% if key == "6" %}selected{% endif %}>Key (F#)</option>
+        <option value="7" {% if key == "7" %}selected{% endif %}>Key (G)</option>
+        <option value="8" {% if key == "8" %}selected{% endif %}>Key (G#)</option>
+        <option value="9" {% if key == "9" %}selected{% endif %}>Key (A)</option>
+        <option value="10" {% if key == "10" %}selected{% endif %}>Key (A#)</option>
+        <option value="11" {% if key == "11" %}selected{% endif %}>Key (B#)</option>
+      </select>
+
+      <label class="form-label"><span class="emoji">🕒</span> Time Signature</label>
+      <select name="time_signature" class="form-control custom-select" required>
+        <option value="">Choose Time Signature</option>
+        <option value="3" {% if time_signature == "3" %}selected{% endif %}>3/4</option>
+        <option value="4" {% if time_signature == "4" %}selected{% endif %}>4/4</option>
+        <option value="5" {% if time_signature == "5" %}selected{% endif %}>5/4</option>
+      </select>
+
+      <div class="text-center">
+        <button type="submit" class="btn-submit">🎵 Predict Song 🎵</button>
+      </div>
+
+      <div class="result mt-4">
+        <label class="form-label">🎯 Prediction Result</label>
+        <input class="form-control" placeholder="Prediction will appear here" value="{{ prediction }}" readonly>
+      </div> 
+      </div>
+      </div>
+    </form>
+    <br/>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" 
+      crossorigin="anonymous"
+    ></script>
+  </body>
